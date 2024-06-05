@@ -58,6 +58,11 @@ class GameViewModel : ViewModel() {
         }
     }
 
+    fun skipWord() {
+        updateGameState(_uiState.value.score)
+        updateUserGuess("")
+    }
+
     private fun pickRandomWordAndShuffle(): String {
         currentWord = allWords.random()
         if (usedWords.contains(currentWord)) {
