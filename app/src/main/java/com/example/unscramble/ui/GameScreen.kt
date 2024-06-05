@@ -80,9 +80,10 @@ fun GameScreen(
             style = typography.titleLarge,
         )
         GameLayout(
-            onKeyboardDone = { },
-            onUserGuessChanged = { gameViewModel.updateUserGuess(it) } ,
+            onKeyboardDone = { gameViewModel.checkUserGuess() },
+            onUserGuessChanged = { gameViewModel.updateUserGuess(it) },
             currentScrambledWord = gameUiState.currentScrambleWord,
+            isGuessWrong = gameUiState.isGuessedWordWrong,
             userGuess = gameViewModel.userGuess,
             modifier = Modifier
                 .fillMaxWidth()
@@ -99,7 +100,9 @@ fun GameScreen(
 
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { }
+                onClick = {
+                    gameViewModel.checkUserGuess()
+                }
             ) {
                 Text(
                     text = stringResource(R.string.submit),
@@ -140,7 +143,9 @@ fun GameLayout(
     onUserGuessChanged: (String) -> Unit,
     onKeyboardDone: () -> Unit,
     userGuess: String,
-    modifier: Modifier = Modifier, currentScrambledWord: String) {
+    isGuessWrong: Boolean,
+    modifier: Modifier = Modifier, currentScrambledWord: String
+) {
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
     Card(
@@ -182,8 +187,14 @@ fun GameLayout(
                     disabledContainerColor = colorScheme.surface,
                 ),
                 onValueChange = { onUserGuessChanged(it) },
-                label = { Text(stringResource(R.string.enter_your_word)) },
-                isError = false,
+                label = {
+                    if (isGuessWrong) {
+                        Text(stringResource(R.string.wrong_guess))
+                    } else {
+                        Text(stringResource(R.string.enter_your_word))
+                    }
+                },
+                isError = isGuessWrong,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done
                 ),
